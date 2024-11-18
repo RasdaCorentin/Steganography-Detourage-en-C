@@ -79,8 +79,15 @@ ImP2 chargeImP2(char* fichier){
     return newImP2;
 }
 void sauveImP2(char* nom, ImP2 im){
-    int i, j;
-    FILE * fdest = fopen(nom, "w"); // Ouverture du fichier destination en écriture et vérification
+    // Verifie si le nom de fichier se termine par ".pgm"
+    int i, j; 
+    char filename[256];
+	if (strlen(nom) > 4 && strcmp(nom + strlen(nom) - 4, ".pgm") != 0) {
+        snprintf(filename, sizeof(filename), "%s.pgm", nom);
+    } else {
+        snprintf(filename, sizeof(filename), "%s", nom);
+    }
+    FILE * fdest = fopen(filename, "w"); // Ouverture du fichier destination en écriture et vérification
     if (fdest == NULL){
         fprintf(stderr, "\n%s : erreur à la creation du fichier", nom);
         abort();
@@ -180,7 +187,15 @@ ImP3 chargeImP3(char* fichier){
 
 void sauveImP3(char* nom, ImP3 im){
     int i, j;
-    FILE * fdest = fopen(nom, "w"); // Ouverture du fichier destination en écriture et vérification
+	char filename[256];
+    
+	// Verifie si le nom de fichier se termine par ".ppm"
+    if (strlen(nom) > 4 && strcmp(nom + strlen(nom) - 4, ".ppm") != 0) {
+        snprintf(filename, sizeof(filename), "%s.ppm", nom);
+    } else {
+        snprintf(filename, sizeof(filename), "%s", nom);
+    }
+    FILE * fdest = fopen(filename, "w"); // Ouverture du fichier destination en écriture et vérification
     if (fdest == NULL){
         fprintf(stderr, "\n%s : erreur à la creation du fichier", nom);
         abort();
@@ -189,7 +204,7 @@ void sauveImP3(char* nom, ImP3 im){
     //Mettre Type
     fprintf(fdest, "P3\n");
     //Mettre Commentaire 
-    fprintf(fdest, "#RASDA_RAZAFITSALAMA ANDRIAMAHENINA_43004877_36000793\n");
+    fprintf(fdest, "#RASDA_RAZAFITSALAMA-ANDRIAMAHENINA_43004877_36000793\n");
     //Mettre  Mettre Hauteur Largeur
     fprintf(fdest, "%d %d\n", im.hauteur, im.largeur);
     //Mettre Vmax
@@ -201,12 +216,4 @@ void sauveImP3(char* nom, ImP3 im){
     }
 }
 
-}
-
-int main(){
-    char* fichier = "./CCTP24/chaises.pgm";
-    char* nom = "./CCTP24/chaises2.pgm";
-    ImP2 oldImP2, newImP2; 
-    oldImP2 = chargeImP2(fichier);
-    sauveImP2(nom, oldImP2);
 }

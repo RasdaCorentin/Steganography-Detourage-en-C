@@ -70,10 +70,43 @@ extern ImP2 copieImP2(ImP2 im);
 extern ImP2 chargeImP2(char* fichier);
 
 
-// chargeImP2 : char* x ImP2 -> ImP2
+// sauveImP2 : char* x ImP2 -> ImP2
 // Entrée : le nom du fichier a copier et une image
 // Sortie : Rien
-//Crée un fichier image .ppm
+//Crée un fichier image .pgm
 extern void sauveImP2(char* nom, ImP2 im);
+
+// P3toP2 : ImP3 -> ImP2
+// Entrée : Image couleur chargé
+// Sortie : Image en niveau de gris
+extern ImP2 P3toP2(const ImP3 im3);
+
+// negatifP2 : ImP2 -> ImP2
+// Entrée : prend une image P2
+// Sortie : pixel négatif a comme niveau de gris maxval − g.
+extern ImP2 negatifP2(const ImP2 im);
+
+// negatifImP3 : const ImP3 -> ImP3
+// Entrée : prend une image P2
+// Sortie : pixel négatif a comme niveau de gris maxval − rvb.
+extern ImP3 negatifP3(const ImP3 im);
+
+// flouImP3 : const ImP3 x int -> ImP3
+// Entrée : Image couleur
+// Sortie :  Foulté de rayon r
+extern ImP3 flou(const ImP3 im, int r);
+
+// negatifImP3 : const ImP3 -> ImP3
+// Entrée : prend une image couleur
+// Sortie : détoure l'image .
+extern ImP3 detoure(const ImP3 im);
+
+extern ImP3 cacheImage(const ImP3 im1, const ImP3 im2);
+
+extern ImP3 reveleImage(const ImP3 im);
+
+extern ImP3 cacheTexte(const ImP3 im, char* lefichier);
+
+extern void reveleTexte(const ImP3 im, char* nonfichier);
 
 #endif
