@@ -1,5 +1,16 @@
+//
+//  libimage.h
+//
+// Régis Girard 2024
+
 #ifndef LIBIMAGE_H
 #define LIBIMAGE_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
 
 // ************************************************
 // Définition des types
@@ -17,96 +28,174 @@ typedef struct pixelrgb {
 typedef struct image3 {
     int hauteur;        // Hauteur en pixels
     int largeur;        // Largeur en pixels
-    int maxval;         // Valeur maximal d'un pixel
+    int maxval;         // Valeur maximal d'un pixel (255)
     PixelRGB** tpix;       // Le tableau des pixels
 } ImP3;
 
 
-// Le type ImP2 pour stocker une image de type P2 dans un tableau rectangulaires d'octets 
+// Le type ImP2 pour stocker une image de type P2 dans un tableau rectangulaire d'octets 
 // niveau de gris entre 0 net 255
 
 typedef struct image2 {
     int hauteur;        // Hauteur en pixels
     int largeur;        // Largeur en pixels
-    int maxval;         // Valeur maximal d'un pixel
+    int maxval;         // Valeur maximal d'un pixel (255)
     unsigned char** tpix;       // Le tableau des pixels gris
 } ImP2;
 
-// initImP3 : int x int x int -> ImP3
-// Entrée : 3 entiers, hauteur , largeur et la valeur max de l'image (intensité de couleur)
-// Sortie : une structure ImP3 initialisé avec les valeurs passee et le malloc de tpix déjà fait
+
+
+// ************************************************
+// initImP3 : effectue l'allocation mémoire nécessaire pour une image de haut x larg pixels 
+// et dont l'intensité maximal pour les pixels est vmax
+
+
 extern ImP3 initImP3(int haut, int larg, int vmax);
 
-// copieImP3 : ImP3 -> ImP3
-// Entrée : une ImP3 a copié
-// Sortie : une copie de la structure ImP3 entrée en paramètre
-extern ImP3 copieImP3(ImP3 im);
 
-// chargeImP3 : char* -> ImP3
-// Entrée : un pointeur sur le nom du fichier à charger
-// Sortie : une structure ImP3 avec les valeurs dictée par le fichier.
+// ************************************************
+// copieImageP3 : retourne une copie de l'image donnée en paramètre
+
+extern ImP3 copieImP3(const ImP3 im);
+
+
+// ************************************************
+// initImP2 : effectue l'allocation mémoire nécessaire pour une image en niveaux de gris 
+// de haut x larg pixels et dont l'intensité maximal pour les pixels est vmax
+
+extern ImP2 initImP2(int haut, int larg, int vmax);
+
+
+// ************************************************
+// copieImP2 : retourne une copie de l'image de type P2 donnée en paramètre
+
+extern ImP2 copieImP2(const ImP2 im);
+
+
+// ************************************************
+// chargeImP3 : charge dans une structure de type imP3
+// l'image contenue dans le fichier donnée en paramètre
+
 extern ImP3 chargeImP3(char* fichier);
 
 
-// sauveImP3 : char* x ImP3 -> ImP3
-// Entrée : le nom du fichier a copier et une image
-// Sortie : Rien
-//Crée un fichier image .ppm
+// ************************************************
+// sauveImP3 :  créer le fichier image pnm  a partir
+// de la structure ImP3 donnée
+
 extern void sauveImP3(char* nom, ImP3 im);
 
-// initImP2 : int x int x int -> ImP2
-// Entrée : 3 entiers, hauteur , largeur et la valeur max de l'image (intensité de couleur)
-// Sortie : une structure ImP3 initialisé avec les valeurs passee et le malloc de tpix déjà fait
-extern ImP2 initImP2(int haut, int larg, int vmax);
 
-// copieImP2 : ImP2 -> ImP2
-// Entrée : un ImP2 im
-// Sortie : une copie de la structure ImP2 entrée en paramètre
-extern ImP2 copieImP2(ImP2 im);
+// ************************************************
+// chargeImP2 : charge dans une structure de type ImP2
+// l'image contenue dans le fichier donnée en paramètre
 
-// chargeImP2 : char* -> ImP2
-// Entrée : un pointeur sur le nom du fichier à charger
-// Sortie : une structure ImP2 avec les valeurs dicté par le fichier.
 extern ImP2 chargeImP2(char* fichier);
 
 
-// sauveImP2 : char* x ImP2 -> ImP2
-// Entrée : le nom du fichier a copier et une image
-// Sortie : Rien
-//Crée un fichier image .pgm
+// ************************************************
+// sauveImP2 :  créer le fichier image pnm  a partir
+// de la structure ImP2 donnée
+
 extern void sauveImP2(char* nom, ImP2 im);
 
-// P3toP2 : ImP3 -> ImP2
-// Entrée : Image couleur chargé
-// Sortie : Image en niveau de gris
+
+// ************************************************
+// Transformation en niveau de gris
+/*
+La C.I.E (Commission Internationale de l'Éclairage) propose, de caractériser l’information de luminance (la valeur de gris) d’un pixel par deux formules :
+          
+ Dans sa recommandation 709, qui concerne les couleurs « vraies » ou naturelles :
+ Gris = 0.2125 Rouge + 0.7154 Vert + 0.0721 Bleu
+ */
+ // Renvoie une nouvelle image de type P2, l'image d'origine n'est pas modifiée
 extern ImP2 P3toP2(const ImP3 im3);
 
-// negatifP2 : ImP2 -> ImP2
-// Entrée : prend une image P2
-// Sortie : pixel négatif a comme niveau de gris maxval − g.
-extern ImP2 negatifP2(const ImP2 im);
 
-// negatifImP3 : const ImP3 -> ImP3
-// Entrée : prend une image P2
-// Sortie : pixel négatif a comme niveau de gris maxval − rvb.
-extern ImP3 negatifP3(const ImP3 im);
+// ************************************************
+// Inversion des couleurs d'une image P3 (négatif)
+// Renvoie une image en négatif de l'image donnée en paramètre 
 
-// flouImP3 : const ImP3 x int -> ImP3
-// Entrée : Image couleur
-// Sortie :  Foulté de rayon r
+extern ImP3 negatifP3(ImP3 im);
+
+
+// ************************************************
+// Négatif d'une image P2 n niveaux de gris
+// Renvoie une image en négatif de l'image donnée en paramètre 
+
+extern ImP2 negatifP2(ImP2 im);
+
+
+
+
+
+// ************************************************
+// Floutage gaussien
+// 
+// On travaille sur une copie de l'image
+// Chaque pixel p(x,y) est remplacé par la moyenne des pixels
+// se trouvant dans un carré de 2n+1 pixels de coté autour de p(x,y)
+
+// Calcule la moyenne des pixels a une distance au plus n de p(x,y)
+extern PixelRGB floumoy(ImP3 im, int x, int y, int n);
+
+// flou : floute une image en appliquant le rayon de floutage 
+// Renvoie une nouvelle image, celle d'origine n'est pas modifiée
 extern ImP3 flou(const ImP3 im, int r);
 
-// negatifImP3 : const ImP3 -> ImP3
-// Entrée : prend une image couleur
-// Sortie : détoure l'image .
+
+
+// -------------------------------------------
+// Détourage en utilisant le floutage gaussien
+// -------------------------------------------
+
+// Renvoie une nouvelle image résultat du détourage de l'image initilae 
+// en utilisant le flou gaussien avec un rayon de 2
 extern ImP3 detoure(const ImP3 im);
 
+
+
+
+// ************************************************
+// CACHER UNE IMAGE DANS UNE IMAGE
+// 
+
+// cacheImage : cache l'image im2 dans l'image im1
+// im2 doit avoir des dimensions inferieure à celle de im1
+// Chaque pixels de im2 est caché dans le pixel correspondant de im1
+// Renvoie une nouvelle image, celles d'origine ne sont pas modifiées
 extern ImP3 cacheImage(const ImP3 im1, const ImP3 im2);
 
+
+
+// reveleImage : revele l'image cachée dans im
+// On reconstruit l'image cachée à partir des bits de poids faible
+// des octest de l'image im
+// Rq : il y a perte de l'info contenu dans les bits de poids faible de l'image
+// qu'on a cachée.
+// renvoie une nouvelle image, celle d'origine n'est pas modifiée
 extern ImP3 reveleImage(const ImP3 im);
 
+
+
+
+// ************************************************
+// CACHER DU TEXTE DANS UNE IMAGE
+
+
+// cacheTexte: cache le contenu d'un fichier texte dans une image couleur
+// Les caractères du texte sont cachés dans les premiers pixel de l'image
+// Renvoie une nouvelle image, l'image d'origine n'est pas modifiée.
 extern ImP3 cacheTexte(const ImP3 im, char* lefichier);
 
-extern void reveleTexte(const ImP3 im, char* nonfichier);
 
-#endif
+
+
+// reveleTexte : revele le texte caché dans une image couleur im 
+// Créer un fichier texte dans lequel est écrit le texte caché dans une image
+
+extern void reveleTexte(const ImP3 im, char* fichExtrait);
+
+
+#endif /* libimage_h */
+
