@@ -447,6 +447,15 @@ ImP3 reveleImage(const ImP3 im){
     return newImP3; 
 }
 
+ImP3 cacheTexte(const ImP3 im, char* lefichier){
+    //tu peux utiliser perplexity
+}
+
+void reveleTexte(const ImP3 im, char* fichExtrait){
+    //tu peux utiliser perplexity
+}
+
+
 int main(){
     char* fichier = "./CCTP24/raki2.ppm";
     char* fichier2 = "./CCTP24/tableau.ppm";
