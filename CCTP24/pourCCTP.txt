@@ -1,0 +1,30 @@
+// ************************************************
+// Définition des types
+
+// Le type PixelRGB pour représenter les niveaux de (rouge, vert, bleu)
+// Chaque quantité de couleur est comprise entre 0 et 255
+// ce qui correspond au type unsigned char (un entier non signé sur un octet)
+typedef struct pixelrgb {
+    unsigned char r;
+    unsigned char v;
+    unsigned char b;
+} PixelRGB;
+
+// Le type ImP3 pour stocker une image de type P3 dans un tableau de pixels
+typedef struct image3 {
+    int hauteur;        // Hauteur en pixels
+    int largeur;        // Largeur en pixels
+    int maxval;         // Valeur maximal d'un pixel
+    PixelRGB** tpix;       // Le tableau des pixels
+} ImP3;
+
+
+// Le type ImP2 pour stocker une image de type P2 dans un tableau rectangulaires d'octets 
+// niveau de gris entre 0 net 255
+
+typedef struct image2 {
+    int hauteur;        // Hauteur en pixels
+    int largeur;        // Largeur en pixels
+    int maxval;         // Valeur maximal d'un pixel
+    unsigned char** tpix;       // Le tableau des pixels gris
+} ImP2

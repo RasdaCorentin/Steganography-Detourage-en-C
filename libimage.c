@@ -405,3 +405,55 @@ ImP3 detoure(const ImP3 im){
     }}
     return newImP3;
 }
+
+ImP3 cacheImage(const ImP3 im1, const ImP3 im2){
+    //Poids faible == val%16 Poids fort == val - poids faible
+    ImP3 newImP3;
+    newImP3 = initImP3(im1.hauteur,im1.largeur,im1.maxval);
+    newImP3 = copieImP3(im1);
+
+    if(im1.hauteur < im2.hauteur || im1.largeur < im2.largeur){
+        fprintf(stderr, "Erreur, la taille n'est pas bonne. le premier fichier doit être de dimensions supérieur au second.");
+        return newImP3;
+    }
+
+    for(int i=0; i < im2.hauteur; i++){
+        for(int j=0; j < im2.largeur; j++){
+            //on enléve le spixel de l'image majeur que l'on soustrait 
+            //on y ajoute en poids faible les pixel de poids fort de l'autre image
+            newImP3.tpix[i][j].r = (im1.tpix[i][j].r - (im1.tpix[i][j].r % 16)) + ((im2.tpix[i][j].r - (im2.tpix[i][j].r % 16)) / 16);
+            newImP3.tpix[i][j].v = (im1.tpix[i][j].v - (im1.tpix[i][j].v % 16)) + ((im2.tpix[i][j].v - (im2.tpix[i][j].v % 16)) / 16);
+            newImP3.tpix[i][j].b = (im1.tpix[i][j].b - (im1.tpix[i][j].b % 16)) + ((im2.tpix[i][j].b - (im2.tpix[i][j].b % 16)) / 16);
+        }
+    }
+    return newImP3; 
+}
+
+ImP3 reveleImage(const ImP3 im){
+    //Poids faible == val%16 Poids fort == val - poids faible
+    ImP3 newImP3;
+    newImP3 = initImP3(im.hauteur,im.largeur,im.maxval);
+    newImP3 = copieImP3(im);
+
+    for(int i=0; i < im.hauteur; i++){
+        for(int j=0; j < im.largeur; j++){
+            //on enléve le spixel de l'image majeur que l'on soustrait 
+            //on y ajoute en poids faible les pixel de poids fort de l'autre image
+            newImP3.tpix[i][j].r = (im.tpix[i][j].r % 16) * 16;
+            newImP3.tpix[i][j].v = (im.tpix[i][j].v % 16) * 16;
+            newImP3.tpix[i][j].b = (im.tpix[i][j].b % 16) * 16;
+        }
+    }
+    return newImP3; 
+}
+
+int main(){
+    char* fichier = "./CCTP24/raki2.ppm";
+    char* fichier2 = "./CCTP24/tableau.ppm";
+    char* nom = "./CCTP24/raki3.ppm";
+    ImP3 oldImP3, oldImP32, newImP3; 
+    oldImP3 = chargeImP3(fichier);
+    oldImP32 = chargeImP3(fichier2);
+    newImP3 = reveleImage(oldImP3);
+    sauveImP3(nom, newImP3);
+}
