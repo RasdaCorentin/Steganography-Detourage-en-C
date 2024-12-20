@@ -446,23 +446,68 @@ ImP3 reveleImage(const ImP3 im){
     }
     return newImP3; 
 }
+ImP3 cacheTexte(const ImP3 im1, char* lefichier) {
+    FILE *f = fopen(lefichier, "r");
+    if (f == NULL) {
+        printf("Erreur : Impossible d'ouvrir le fichier %s\n", lefichier);
+        return copieImP3(im1);
+    }
 
-ImP3 cacheTexte(const ImP3 im, char* lefichier){
-    //tu peux utiliser perplexity
+    ImP3 newImP3 = copieImP3(im1);
+    unsigned char poids_fort, poids_faible;
+    int i = 0, j = 0;
+    char c;
+
+    while ((c = fgetc(f)) != EOF && i < newImP3.hauteur) {
+        poids_fort = (c - (c % 16)) / 16; // 4 bits de poids fort
+        poids_faible = c%16;      // 4 bits de poids faible
+
+        // Modifier les pixels pour cacher les caractères
+        newImP3.tpix[i][j].r = (im1.tpix[i][j].r - (im1.tpix[i][j].r % 16)) + poids_fort;
+        newImP3.tpix[i][j].v = (im1.tpix[i][j].v - (im1.tpix[i][j].v % 16)) + poids_faible;
+
+        j++;
+        if (j == newImP3.largeur) {
+            j = 0;
+            i++;
+        }
+    }
+
+    // Ajouter le caractère de fin '\0' pour indiquer la fin du texte
+    if (i < newImP3.hauteur) {
+        newImP3.tpix[i][j].r = (im1.tpix[i][j].r - (im1.tpix[i][j].r % 16));
+        newImP3.tpix[i][j].v = (im1.tpix[i][j].v - (im1.tpix[i][j].v % 16));
+    }
+
+    fclose(f);
+    return newImP3;
+}
+void reveleTexte(const ImP3 im, char* nomfichier) {
+    unsigned char poids_fort, poids_faible;
+    FILE *f = fopen(nomfichier, "w");
+    if (f == NULL) {
+        printf("Erreur : Impossible de créer le fichier %s\n", nomfichier);
+        return;
+    }
+
+    for (int i = 0; i < im.hauteur; i++) {
+        for (int j = 0; j < im.largeur; j++) {
+            poids_fort = im.tpix[i][j].r % 16; // 4 bits de poids fort (dans r)
+            poids_faible = im.tpix[i][j].v % 16; // 4 bits de poids faible (dans v)
+
+            // Reconstruire le caractère ASCII
+            char c = (poids_fort * 16) + poids_faible;
+
+            if (c == '\0') {
+                fclose(f);
+                return;
+            }
+
+            fputc(c, f);
+        }
+    }
+
+    fclose(f);
 }
 
-void reveleTexte(const ImP3 im, char* fichExtrait){
-    //tu peux utiliser perplexity
-}
 
-
-int main(){
-    char* fichier = "./CCTP24/raki2.ppm";
-    char* fichier2 = "./CCTP24/tableau.ppm";
-    char* nom = "./CCTP24/raki3.ppm";
-    ImP3 oldImP3, oldImP32, newImP3; 
-    oldImP3 = chargeImP3(fichier);
-    oldImP32 = chargeImP3(fichier2);
-    newImP3 = reveleImage(oldImP3);
-    sauveImP3(nom, newImP3);
-}

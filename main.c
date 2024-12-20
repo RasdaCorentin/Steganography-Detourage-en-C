@@ -28,12 +28,42 @@ int main() {
         scanf("%d", &choix);
 
         switch (choix) {
-            case 1:
+           case 1:
                 printf("Entrez le chemin de l'image à charger : ");
                 scanf("%s", input_file);
-                image = chargeImP3(input_file);
-                image_chargee = 1;
-                printf("Image chargée : %dx%d pixels, maxval = %d\n", image.largeur, image.hauteur, image.maxval);
+
+                // Ouverture du fichier pour lire le type d'image
+                FILE *file = fopen(input_file, "r");
+                if (!file) {
+                    printf("Erreur : Impossible d'ouvrir le fichier %s.\n", input_file);
+                    break;
+                }
+
+                char type[3];
+                fscanf(file, "%2s", type); // Lecture des 2 premiers caractères (ex. "P3" ou "P2")
+                fclose(file);
+
+                if (strcmp(type, "P3") == 0) {
+                    image = chargeImP3(input_file);
+                    image_chargee = 1;
+                    printf("Image P3 chargée : %dx%d pixels, maxval = %d\n", image.largeur, image.hauteur, image.maxval);
+                } else if (strcmp(type, "P2") == 0) {
+                    ImP2 image_p2 = chargeImP2(input_file);
+                    image = initImP3(image_p2.hauteur, image_p2.largeur, image_p2.maxval);
+                    // Conversion de P2 en P3
+                    for (int i = 0; i < image_p2.hauteur; i++) {
+                        for (int j = 0; j < image_p2.largeur; j++) {
+                            image.tpix[i][j].r = image_p2.tpix[i][j];
+                            image.tpix[i][j].v = image_p2.tpix[i][j];
+                            image.tpix[i][j].b = image_p2.tpix[i][j];
+                        }
+                    }
+                    free(image_p2.tpix); // Libération de la mémoire de l'image P2
+                    image_chargee = 1;
+                    printf("Image P2 chargée et convertie en P3 : %dx%d pixels, maxval = %d\n", image.largeur, image.hauteur, image.maxval);
+                } else {
+                    printf("Erreur : Format d'image non supporté (%s).\n", type);
+                }
                 break;
 
             case 2:
@@ -170,6 +200,10 @@ int main() {
         }
 
     } while (choix != 0);
+
+    if (image_chargee) {
+        free(image.tpix);
+    }
 
     return EXIT_SUCCESS;
 }
