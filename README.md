@@ -10,3 +10,5 @@ Projet réalisé dans le cadre de l'UE Langage C Avancée.
 L2 Informatique 
 Contributeurs: 
 Henitsoa
+
+TODO : Projet incomplet, mauvaise gestion de la mémoire
